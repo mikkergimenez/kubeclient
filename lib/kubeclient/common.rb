@@ -542,6 +542,12 @@ module Kubeclient
 
     def load_entities
       @entities = {}
+      unless fetch_entities['resources']
+        resource = fetch_entities
+        entity = ClientMixin.parse_definition(resource['kind'], resource['name'])
+        @entities[entity.method_names[0]] = entity if entity
+      end
+
       fetch_entities['resources'].each do |resource|
         next if resource['name'].include?('/')
         # Not a regular entity, special functionality covered by `process_template`.
